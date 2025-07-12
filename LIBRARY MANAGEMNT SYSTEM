@@ -1,0 +1,230 @@
+// LIBRARY MANAGEMENT SYSTEM
+
+#include <iostream>
+#include <string>
+#include <stdlib.h>
+using namespace std;
+
+class Library {
+public:
+    int id;
+    string book;
+    string name;
+    string author;
+    static int bookcount;
+    bool borrowed;
+
+    void addbook(int x) {
+        id = x;
+        cout << "The book ID is : " << id << endl;
+        cin.ignore();
+        cout << "Enter the Book name : ";
+        getline(cin, book);
+        cout << "Enter the author name : ";
+        getline(cin, author);
+        borrowed = false;
+    }
+
+    void display() {
+        cout << "ID : " << id << endl;
+        cout << "Book Name : " << book << endl;
+        cout << "Author Name : " << author << endl;
+        cout << "Borrowed status : " << (borrowed ? "Yes" : "No") << endl;
+    }
+};
+int Library::bookcount = 0;
+
+class Members {
+public:
+    int id;
+    static int membercount;
+    string mem;
+
+    void addmembers(int x) {
+        id = x;
+        cin.ignore();
+        cout << "Enter the member name : ";
+        getline(cin, mem);
+        cout << "Member ID is : " << id << endl;
+    }
+
+    void seen() {
+        cout << "MEMBER ID : " << id << endl;
+        cout << "MEMBER NAME : " << mem << endl;
+    }
+};
+int Members::membercount = 0;
+
+int main() {
+    int id, choice;
+    Library obj[100];
+    Members bnda[100];
+
+    while (true) {
+        cout << "\n<-THE LIBRARY BOOK MANAGEMENT SYSTEM->\n" << endl;
+        cout << "PRESS 1 FOR ADD MEMBERS IN THE LIBRARY" << endl;
+        cout << "PRESS 2 FOR LIST OF MEMBERS YOU ADDED" << endl;
+        cout << "PRESS 3 FOR ADDING THE BOOKS" << endl;
+        cout << "PRESS 4 FOR DISPLAY THE BOOKS" << endl;
+        cout << "PRESS 5 FOR INFORMATION FROM BOOK ID" << endl;
+        cout << "PRESS 6 FOR INFORMATION FROM BOOK TITLE" << endl;
+        cout << "PRESS 7 FOR BORROW A BOOK" << endl;
+        cout << "PRESS 8 FOR EXIT" << endl;
+        cout << "PRESS 9 FOR RETURN A BOOK" << endl;
+        cout << "\nCHOOSE A NUMBER HERE THAT YOU WANT : ";
+        cin >> choice;
+
+        switch (choice) {
+        case 1:
+            cout << "ADDING MEMBERS IN THE LIBRARY" << endl;
+            id = Members::membercount;
+            bnda[Members::membercount].addmembers(++id);
+            Members::membercount++;
+            break;
+
+        case 2:
+            cout << "LIST OF MEMBERS YOU ADDED\n\n";
+            for (int i = 0; i < Members::membercount; i++) {
+                bnda[i].seen();
+            }
+            break;
+
+        case 3:
+            cout << "ADDING BOOKS IN THE LIBRARY" << endl;
+            id = Library::bookcount;
+            obj[Library::bookcount].addbook(++id);
+            Library::bookcount++;
+            break;
+
+        case 4:
+            if (Library::bookcount < 1) {
+                cout << "\n-> NO BOOK IN THE LIBRARY" << endl;
+            } else {
+                cout << "\n-> BOOKS IN THE LIBRARY" << endl;
+                for (int i = 0; i < Library::bookcount; i++) {
+                    obj[i].display();
+                    cout << "----------------------\n";
+                }
+            }
+            break;
+
+        case 5: {
+            int ID, findindex = -1;
+            cout << "\n-> FOR INFORMATION FROM BOOK ID " << endl;
+            cout << "Enter the book ID here : ";
+            cin >> ID;
+            if (Library::bookcount < 1) {
+                cout << "\n!! NO BOOK IN THE LIBRARY !! " << endl;
+            } else {
+                for (int i = 0; i < Library::bookcount; i++) {
+                    if (ID == obj[i].id) {
+                        findindex = i;
+                        break;
+                    }
+                }
+                if (findindex != -1) {
+                    obj[findindex].display();
+                } else {
+                    cout << "...NO BOOK FOUND..." << endl;
+                }
+            }
+            break;
+        }
+
+        case 6: {
+            string title;
+            int findindex = -1;
+            cout << "\n-> FOR INFORMATION FROM BOOK TITLE " << endl;
+            cout << "ENTER BOOK NAME : ";
+            cin.ignore();
+            getline(cin, title);
+
+            if (Library::bookcount < 1) {
+                cout << "\n!! NO BOOK IN THE LIBRARY !! " << endl;
+            } else {
+                for (int i = 0; i < Library::bookcount; i++) {
+                    if (title == obj[i].book) {
+                        findindex = i;
+                        break;
+                    }
+                }
+                if (findindex != -1) {
+                    obj[findindex].display();
+                } else {
+                    cout << "NO MATCHING BOOK FOUND !!" << endl;
+                }
+            }
+            break;
+        }
+
+        case 7: {
+            int borrowID, findindex = -1;
+            cout << "-> BORROW A BOOK" << endl;
+            cout << "ENTER BOOK ID : ";
+            cin >> borrowID;
+
+            if (Library::bookcount == 0) {
+                cout << "THERE IS NO BOOK IN THE LIBRARY. PLEASE ADD BOOKS FIRST." << endl;
+            } else {
+                for (int i = 0; i < Library::bookcount; i++) {
+                    if (borrowID == obj[i].id) {
+                        findindex = i;
+                        break;
+                    }
+                }
+
+                if (findindex != -1) {
+                    if (!obj[findindex].borrowed) {
+                        obj[findindex].borrowed = true;
+                        cout << "Book borrowed successfully!\n";
+                        obj[findindex].display();
+                    } else {
+                        cout << "This book is already borrowed by someone else." << endl;
+                    }
+                } else {
+                    cout << "Book ID not found!" << endl;
+                }
+            }
+            break;
+        }
+
+        case 9: {
+            int returnID, findindex = -1;
+            cout << "-> RETURN A BOOK" << endl;
+            cout << "Enter the book ID: ";
+            cin >> returnID;
+
+            for (int i = 0; i < Library::bookcount; i++) {
+                if (returnID == obj[i].id) {
+                    findindex = i;
+                    break;
+                }
+            }
+
+            if (findindex != -1) {
+                if (obj[findindex].borrowed) {
+                    obj[findindex].borrowed = false;
+                    cout << "Book returned successfully.\n";
+                    obj[findindex].display();
+                } else {
+                    cout << "Book was not borrowed.\n";
+                }
+            } else {
+                cout << "Book ID not found.\n";
+            }
+            break;
+        }
+
+        case 8:
+            cout << "-> EXIT FROM THE SYSTEM" << endl;
+            exit(0);
+            break;
+
+        default:
+            cout << "\nPLEASE ENTER A VALID NUMBER !!" << endl;
+            break;
+        }
+    }
+
+    return 0;
+}
